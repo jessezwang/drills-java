@@ -1,11 +1,11 @@
-package haganeno;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 public class FindingStrings {
-public	HashSet<String> substrings;
+public	HashSet<String> substrings = new HashSet<String>();
 public	String[] sorted_substrings;
 	String[] aux;
 	
@@ -42,8 +42,8 @@ public	String[] sorted_substrings;
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		FindingStrings fs = new FindingStrings();
-//		Scanner in = new Scanner(System.in);
-		Scanner in = new Scanner(new File("src/haganeno/input00.txt"));
+		Scanner in = new Scanner(System.in);
+//		Scanner in = new Scanner(new File("src/haganeno/input00.txt"));
 		int n = in.nextInt();
 		for (int i=0; i<n; i++){
 			String s = in.next();
@@ -52,7 +52,8 @@ public	String[] sorted_substrings;
 					fs.substrings.add(s.substring(beg, beg+sz));
 		}
 		Object[] objArray = fs.substrings.toArray();
-		fs.sorted_substrings= (String[]) objArray;
+		fs.sorted_substrings = Arrays.copyOf(objArray, objArray.length, String[].class);
+		fs.sortSubstrings(0, fs.sorted_substrings.length, 0);
 		int q = in.nextInt();
 		for (int j=0; j<q; j++) {
 			int k = in.nextInt();
