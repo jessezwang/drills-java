@@ -41,7 +41,7 @@ public	String[] sorted_substrings;
 	public static void main(String[] args) throws FileNotFoundException {
 		FindingStrings fs = new FindingStrings();
 		Scanner in = new Scanner(System.in);
-//		Scanner in = new Scanner(new File("src/haganeno/input00.txt"));
+//		Scanner in = new Scanner(new File("src/input00.txt"));
 		int n = in.nextInt();
 		for (int i=0; i<n; i++){
 			String s = in.next();

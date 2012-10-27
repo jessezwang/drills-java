@@ -1,7 +1,7 @@
-2
-aab
-aac
-3
-3
-8
-23
+5
+5 4 3 1 2
+YYYYY
+YYNYY
+YNYYY
+YYYYY
+YYYYY
