@@ -1,24 +1,26 @@
-import java.util.*;
-import java.awt.Point;
 public class UniquePaths2 {
 	public int uniquePathsWithObstacles(int[][] obstacleGrid) {
-        if (obstacleGrid[0][0]==1) return 0;
-        int x=0, y=0, count=0;
-        Queue<Point> queue = new LinkedList<Point>();
-        queue.offer(new Point(0,0));
-        while(!queue.isEmpty()){
-        	Point p = queue.poll();
-        	x=p.x;
-        	y=p.y;
-        	if (x==obstacleGrid.length-1 && y==obstacleGrid[x].length-1) count++;
-        	else{
-        		if(x<obstacleGrid.length-1 && obstacleGrid[x+1][y]==0)
-        			queue.offer(new Point(x+1,y));
-        		if(y<obstacleGrid[x].length-1 && obstacleGrid[x][y+1]==0)
-        			queue.offer(new Point(x, y+1));
-        	}
-        }
-        return count;    
+    	int X=obstacleGrid.length;
+		int Y=obstacleGrid[0].length;
+        if (obstacleGrid[X-1][Y-1]==1) return 0;
+		int[][] dfa = new int[X+1][Y+1];
+		for (int i=0; i<X; i++)
+			for (int j=0; j<Y; j++)
+				if (obstacleGrid[i][j]==1) dfa[i][j]=0;
+				else dfa[i][j]=-1;
+		dfa[X-1][Y-1]=1;
+		for (int i=0; i<=X; i++)
+			dfa[i][Y]=0;
+		for (int i=0; i<=Y; i++)
+			dfa[X][i]=0;
+		for (int j=Y-2, i=X-1; j>=0; j--)	
+			if (dfa[i][j]==-1)
+				dfa[i][j]=dfa[i+1][j]+dfa[i][j+1];
+		for (int i=X-2; i>=0; i--)
+			for (int j=Y-1; j>=0; j--)
+				if (dfa[i][j]==-1)
+					dfa[i][j]=dfa[i+1][j]+dfa[i][j+1];
+        return dfa[0][0];    
     }	
 	
 	public static void main(String[] args) {
