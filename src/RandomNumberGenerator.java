@@ -39,7 +39,7 @@ public class RandomNumberGenerator {
 				// num = c*(c-a+b);
 				denom = 2*b;
 				num = 2*c-a;
-			} else {
+			} else { // c<a
 				// result = c^2/2ab
 				denom = 2*a*b;
 				num = c*c;
