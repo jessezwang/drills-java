@@ -5,37 +5,12 @@ import java.util.*;
 
 public class PowerOutage {
 	private int K;
-	private Edge[] edgeTo;
-	private int[] distTo;
-	private boolean[] marked;
-	private PriorityQueue<Vertex> pq;
+	private ArrayList<Edge> mst;
+	private PriorityQueue<Edge> pq;
+	private int[] set;
 	private int TotalWeight;
 	public EdgeWeightedGraph G;
 	
-	class Vertex implements Comparable<Vertex>{
-		private final int v;
-		private final int weight;
-		public Vertex(int v, int weight){
-			this.v = v;
-			this.weight = weight;
-		}
-		public int weight() {
-			return weight;  
-		}
-		
-		public int vertex() {
-			return v;
-		}
-		
-		public int compareTo(Vertex that){
-			if (this.weight() < that.weight())
-				return -1;
-			else if (this.weight() > that.weight())
-				return 1;
-			else 
-				return 0;
-		}
-	}
 	
     // Edge
 	class Edge implements Comparable<Edge>{
@@ -92,67 +67,68 @@ public class PowerOutage {
 	    	int v = e.either();
 	    	int w = e.other(v);
 	    	adj[v].add(e);
-	    	adj[w].add(e);
+//	    	adj[w].add(e);
 	    	E++;
 	    }
 	    public Iterable<Edge> adj(int v) {
 	    	return adj[v];  
 	    }
+	    
+	    public Iterable<Edge> edges() {
+	    	ArrayList<Edge> ret = new ArrayList<Edge>();
+	    	for (int v=1; v<adj.length; v++)
+	    		ret.addAll(adj[v]);
+	    	return ret;
+	    }
 	  } //Graph
-	
-	private void visit(Vertex v)
-    {  // Mark v and add to pq all edges from v to unmarked vertices.
-		marked[v.vertex()] = true;
-		for (Edge e : G.adj(v.vertex())){
-			int w = e.other(v.vertex());
-			if (marked[w]) continue;
-			if (e.weight() < distTo[w]) {  
-				// Edge e is new best connection from tree to w.
-				edgeTo[w] = e;
-				if (pq.contains(w)) {
-					pq.remove(new Vertex(w, distTo[w]) );
-					pq.offer(new Vertex(w, e.weight()) );
-				} else                
-					pq.offer( new Vertex(w, e.weight()) );
-				distTo[w] = e.weight();
-			}
-		}
-    }
 	
 	// PowerOutage Constructor
 	public PowerOutage(int K)
 	{
 		TotalWeight = 0;
 		this.K = K;
+		mst = new ArrayList<Edge>();
+		pq = new PriorityQueue<Edge>();
 	} // Constructor
 	
 	public String weight(){
-		edgeTo = new Edge[G.V()];
-		distTo = new int[G.V()];
-		marked = new boolean[G.V()];
-		for (int v = 1; v < G.V(); v++)
-			distTo[v] = Integer.MAX_VALUE;
-		pq = new PriorityQueue<Vertex>(G.V());
-		for (int v=1; v<marked.length; v++)
-			if (!marked[v]) {
-				if (K--==0)
-					break;
-				pq.clear();
-				distTo[v] = 0;
-				pq.offer(new Vertex(v,0));
-				while (!pq.isEmpty())
-					visit(pq.poll());
-			}
-		if (K>=marked.length-1)
+		set = new int[G.V()];
+		for (int v=1; v<G.V(); v++)
+			set[v] = v;
+		if (K>=G.V()-1)
 			return "0";
-		for (int v=1; v<marked.length; v++)
-			if (!marked[v])
-				return "Impossible!";
-		for (int v=1; v<marked.length; v++)
-			TotalWeight += distTo[v];
+		for (int v=1; v<G.V(); v++)
+			for (Edge e: G.adj(v))
+				pq.add(e);
+		while (!pq.isEmpty() && mst.size() < G.V()-K-1) {
+			Edge e = pq.poll();
+			int either=e.either();
+			int count1=0, count2=0;
+			int other = e.other(either);
+			while (set[either]!=either){
+				either = set[either];
+				count1++;
+			}
+			while (set[other]!=other){
+				other = set[other];
+				count2++;
+			}
+			if (either!=other){
+				mst.add(e);
+				if (count1>count2)
+					set[other] = either;
+				else
+					set[either] = other;
+			}
+		}
+		for (int v=1; v<G.V(); v++)
+			if (set[v]==v) 
+				if (--K<0)
+					return "Impossible!";
+		for (int i=0; i<mst.size(); i++)
+			TotalWeight += mst.get(i).weight();
 		return Integer.toString(TotalWeight);
 	}
-	
 	
 	/**
 	 * @param args
